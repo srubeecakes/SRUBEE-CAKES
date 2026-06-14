@@ -2,6 +2,8 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const BASE_URL = "https://srubee-cakes-bgsn.onrender.com";
+
 function Reviews() {
   const [reviews, setReviews] = useState([]);
 
@@ -15,11 +17,12 @@ function Reviews() {
   }, []);
 
   const loadReviews = async () => {
-    const res = await axios.get(
-      "https://srubee-cakes-bgsn.onrender.com/reviews",
-    );
-
-    setReviews(res.data);
+    try {
+      const res = await axios.get(`${BASE_URL}/reviews`);
+      setReviews(res.data);
+    } catch (err) {
+      console.log("GET ERROR:", err);
+    }
   };
 
   const handleChange = (e) => {
@@ -32,16 +35,21 @@ function Reviews() {
   const submitReview = async (e) => {
     e.preventDefault();
 
-await axios.post(
-  "https://srubee-cakes-bgsn.onrender.com/reviews",
-  form
-);
-    setForm({
-      name: "",
-      review: "",
-    });
+    try {
+      await axios.post(`${BASE_URL}/reviews`, {
+        name: form.name,
+        review: form.review,
+      });
 
-    loadReviews();
+      setForm({
+        name: "",
+        review: "",
+      });
+
+      await loadReviews(); // IMPORTANT FIX
+    } catch (err) {
+      console.log("POST ERROR:", err);
+    }
   };
 
   return (
@@ -74,15 +82,17 @@ await axios.post(
         </form>
 
         <div className="reviews-container">
-          {reviews.map((r) => (
-            <div key={r._id} className="review-card">
-              <h3>{r.name}</h3>
-
-              <p>⭐⭐⭐⭐⭐</p>
-
-              <p>{r.review}</p>
-            </div>
-          ))}
+          {reviews.length === 0 ? (
+            <p>No reviews yet...</p>
+          ) : (
+            reviews.map((r) => (
+              <div key={r._id} className="review-card">
+                <h3>{r.name}</h3>
+                <p>⭐⭐⭐⭐⭐</p>
+                <p>{r.review}</p>
+              </div>
+            ))
+          )}
         </div>
       </section>
     </>
