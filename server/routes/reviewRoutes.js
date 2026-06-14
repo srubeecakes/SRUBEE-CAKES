@@ -1,55 +1,33 @@
-const express=require("express");
+const express = require("express");
+const router = express.Router();
+const Review = require("../models/Review");
 
-const router=
-express.Router();
+// POST review
+router.post("/", async (req, res) => {
+  try {
+    console.log("BODY RECEIVED:", req.body);
 
-const Review=
-require("../models/Review");
+    const review = await Review.create({
+      name: req.body.name,
+      review: req.body.review
+    });
 
-router.post(
-"/",
-async(req,res)=>{
-
-try{
-
-const review=
-await Review.create(
-req.body
-);
-
-res.json(review);
-
-}
-
-catch{
-
-res
-.status(500)
-.json({
-message:"Error"
+    res.status(201).json(review);
+  } catch (err) {
+    console.log("POST ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
-}
-
-}
-);
-
-router.get(
-"/",
-async(req,res)=>{
-
-const reviews=
-await Review.find()
-.sort({
-createdAt:-1
+// GET all reviews
+router.get("/", async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (err) {
+    console.log("GET ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
-res.json(
-reviews
-);
-
-}
-);
-
-module.exports=
-router;
+module.exports = router;
