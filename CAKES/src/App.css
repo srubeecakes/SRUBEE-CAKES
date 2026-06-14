@@ -63,7 +63,36 @@ body {
 
   border-bottom: 1px solid #ff69b4;
 }
+/* hamburger icon hidden on desktop */
+.toggle {
+  display: none;
+  font-size: 30px;
+  cursor: pointer;
+}
 
+/* MOBILE VIEW */
+@media (max-width: 768px) {
+
+  .toggle {
+    display: block;
+  }
+
+  .menu {
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    display: none;
+  }
+
+  .menu.active {
+    display: flex;
+  }
+}
 /* =========================
    HERO
 ========================= */
