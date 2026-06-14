@@ -3,153 +3,90 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 function Reviews() {
+  const [reviews, setReviews] = useState([]);
 
-const [reviews,setReviews]=useState([]);
+  const [form, setForm] = useState({
+    name: "",
+    review: "",
+  });
 
-const [form,setForm]=useState({
-name:"",
-review:""
-});
+  useEffect(() => {
+    loadReviews();
+  }, []);
 
-useEffect(()=>{
+  const loadReviews = async () => {
+    const res = await axios.get(
+      "https://srubee-cakes-bgsn.onrender.com/reviews",
+    );
 
-loadReviews();
+    setReviews(res.data);
+  };
 
-},[]);
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-const loadReviews=async()=>{
-
-const res=
-await axios.get(
-"https://srubee-cakes-bgsn.onrender.com/reviews");
-
-setReviews(
-res.data
-);
-
-};
-
-const handleChange=(e)=>{
-
-setForm({
-...form,
-[e.target.name]:
-e.target.value
-});
-
-};
-
-const submitReview=
-async(e)=>{
-
-e.preventDefault();
+  const submitReview = async (e) => {
+    e.preventDefault();
 
 await axios.post(
-"http://localhost:5000/reviews",
-form
+  "https://srubee-cakes-bgsn.onrender.com/reviews",
+  form
 );
+    setForm({
+      name: "",
+      review: "",
+    });
 
-setForm({
-name:"",
-review:""
-});
+    loadReviews();
+  };
 
-loadReviews();
+  return (
+    <>
+      <Navbar />
 
-};
+      <section className="reviews-section">
+        <h1>Customer Reviews ⭐</h1>
 
-return(
+        <p>Share your experience</p>
 
-<>
+        <form className="review-form" onSubmit={submitReview}>
+          <input
+            name="name"
+            placeholder="Your Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-<Navbar/>
+          <textarea
+            name="review"
+            placeholder="Write your review..."
+            value={form.review}
+            onChange={handleChange}
+            required
+          ></textarea>
 
-<section className="reviews-section">
+          <button type="submit">Post Review</button>
+        </form>
 
-<h1>
+        <div className="reviews-container">
+          {reviews.map((r) => (
+            <div key={r._id} className="review-card">
+              <h3>{r.name}</h3>
 
-Customer Reviews ⭐
+              <p>⭐⭐⭐⭐⭐</p>
 
-</h1>
-
-<p>
-
-Share your experience
-
-</p>
-
-<form
-className="review-form"
-onSubmit={submitReview}
->
-
-<input
-name="name"
-placeholder="Your Name"
-value={form.name}
-onChange={handleChange}
-required
-/>
-
-<textarea
-name="review"
-placeholder="Write your review..."
-value={form.review}
-onChange={handleChange}
-required
-></textarea>
-
-<button type="submit">
-
-Post Review
-
-</button>
-
-</form>
-
-<div className="reviews-container">
-
-{
-
-reviews.map((r)=>(
-
-<div
-key={r._id}
-className="review-card"
->
-
-<h3>
-
-{r.name}
-
-</h3>
-
-<p>
-
-⭐⭐⭐⭐⭐
-
-</p>
-
-<p>
-
-{r.review}
-
-</p>
-
-</div>
-
-))
-
-}
-
-</div>
-
-</section>
-
-</>
-
-);
-
+              <p>{r.review}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
 }
 
 export default Reviews;
