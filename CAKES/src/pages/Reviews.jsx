@@ -21,8 +21,7 @@ const loadReviews=async()=>{
 
 const res=
 await axios.get(
-"http://localhost:5000/reviews"
-);
+"https://srubee-cakes-bgsn.onrender.com/reviews");
 
 setReviews(
 res.data
